@@ -37,6 +37,7 @@ class BookShelf extends React.Component {
 
     render() {
         const books= this.props.books;
+        const imgUrl = './icons/book.png';
         return (
                 <div className="bookshelf-books">
                     <i className="book-shelf-multiSelect">
@@ -52,7 +53,7 @@ class BookShelf extends React.Component {
                                 <li key={book.id}>
                                     <div className="book">
                                       <div className="book-top">
-                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(` + book.imageLinks.smallThumbnail+`)` }}></div>
+                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(` + (book.imageLinks ? book.imageLinks.smallThumbnail : imgUrl) +`)` }}></div>
                                             
                                               {this.state.isMultiSelect ? <div className="book-shelf-selecter"><input type="checkbox" value={book.selected} onChange={(e) => this.props.updateBookSelect(e.target.checked, book.id)}/></div>
                                                : <div className="book-shelf-changer"><Select value={book.shelf} selectCallback={(e) => this.props.moveToBookShelf(book, e)}/></div> }

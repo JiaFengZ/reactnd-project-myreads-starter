@@ -7,8 +7,7 @@ import './App.css'
 class SearchPage extends React.Component {
     state = {
         value: '',
-        books: [],
-        booksState: {currentlyReading: [], read: [], wantToRead: []}
+        books: []
     }
 
     handleChange(event) {
@@ -29,7 +28,7 @@ class SearchPage extends React.Component {
         const that = this;
         BooksAPI.search(that.state.value).then((data) => {
             that.setState({
-                books: data.length ? data : []
+                books: Array.isArray(data) ? data : []
             })
         })
     }
@@ -39,16 +38,14 @@ class SearchPage extends React.Component {
         if (book.shelf !== event.target.value) {
             console.log('moveToBookShelf')
             BooksAPI.update({id: book.id}, event.target.value).then((res) => {
-                that.setState({
-                    booksState: res
-                })
+                that.props.updateBooks(); //添加书架后要更新App.js中books
             })
+
         }
         
     }
 
     updateBookSelect(checked, bookId) {
-
         this.setState((prevState) => {
             let len = this.state.books.length;
             while (len--) {
@@ -63,33 +60,15 @@ class SearchPage extends React.Component {
         })
     }
 
-    componentDidMount() {
-        BooksAPI.getAll().then((data) => {
-            let booksState = {};
-            data.forEach((book) => {
-                if (booksState[book.shelf]) {
-                    booksState[book.shelf].push(book.id);
-                } else {
-                    booksState[book.shelf] = [];
-                    booksState[book.shelf].push(book.id);
-                }
-            })
-            this.setState({
-                booksState: booksState
-            })
-        })
-    }
-
     render() {
-        const {books, booksState} = this.state;
-        const keys = ['currentlyReading', 'read', 'wantToRead']
-        keys.forEach((key) => {
-            for (let i = 0, len = booksState[key].length; i < len; i++) {
-                for (let j =0, len1 = books.length; j < len1; j++) {
-                    if (booksState[key][i] === books[j].id) {
-                        books[j].shelf = key;
-                        break;
-                    }     
+        const {books} = this.state;
+        const allBooks = this.props.books;
+        books.forEach((book) => {
+            book.shelf = 'none';
+            for (let i = 0, len = allBooks.length; i < len; i++) {
+                if (book.id === allBooks[i].id) {
+                    book.shelf = allBooks[i].shelf || 'none';
+                    return
                 }
             }
         })

@@ -5,17 +5,9 @@ import BookShelf from './BookShelf'
 import './App.css'
 
 class HomePage extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.switchBookShelf = this.switchBookShelf.bind(this);
-        this.updateBookSelect = this.updateBookSelect.bind(this);
-    }
-    state = {
-        books: []
-    }
-
-    componentDidMount() {
-        this.updateBookShelf();
     }
 
     updateBookShelf() {
@@ -27,22 +19,6 @@ class HomePage extends React.Component {
             })
     }
 
-    updateBookSelect(checked, bookId) {
-
-        this.setState((prevState) => {
-            let len = this.state.books.length;
-            while (len--) {
-                if (prevState.books[len].id === bookId) {
-                    prevState.books[len].selected = checked;
-                    return {
-                        books: prevState.books
-                    }
-                }
-            }
-            
-        })
-    }
-
     switchBookShelf(book, event) {
         const that = this;
         if (book.shelf !== event.target.value) {
@@ -51,7 +27,7 @@ class HomePage extends React.Component {
                 console.log('update success')
                 const booksState = res; 
                 that.setState((prevState) => {
-                    const books = prevState['books'];
+                    const books = this.props.books//prevState['books'];
                     const keys = ['currentlyReading', 'read', 'wantToRead'];
                     keys.forEach((key) => {
                         for (let i = 0, len = booksState[key].length; i < len; i++) {
@@ -74,13 +50,13 @@ class HomePage extends React.Component {
     }
 
     render() {
-        const currentlyReadingBooks = this.state.books.filter((book) => {
+        const currentlyReadingBooks = this.props.books.filter((book) => {
             return book.shelf === 'currentlyReading';
         });
-        const wantToReadBooks = this.state.books.filter((book) => {
+        const wantToReadBooks = this.props.books.filter((book) => {
             return book.shelf === 'wantToRead';
         });
-        const readBooks = this.state.books.filter((book) => {
+        const readBooks = this.props.books.filter((book) => {
             return book.shelf === 'read';
         });
         return (
@@ -93,17 +69,17 @@ class HomePage extends React.Component {
               <div>
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Currently Reading</h2>
-                  <BookShelf updateBookSelect={this.updateBookSelect} books={currentlyReadingBooks} moveToBookShelf={this.switchBookShelf}/>
+                  <BookShelf updateBookSelect={this.props.updateBookSelect} books={currentlyReadingBooks} moveToBookShelf={this.switchBookShelf}/>
                 </div>
 
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Want to Read</h2>
-                  <BookShelf updateBookSelect={this.updateBookSelect} books={wantToReadBooks} moveToBookShelf={this.switchBookShelf}/>
+                  <BookShelf updateBookSelect={this.props.updateBookSelect} books={wantToReadBooks} moveToBookShelf={this.switchBookShelf}/>
                 </div>
 
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Read</h2>
-                  <BookShelf updateBookSelect={this.updateBookSelect} books={readBooks} moveToBookShelf={this.switchBookShelf}/>
+                  <BookShelf updateBookSelect={this.props.updateBookSelect} books={readBooks} moveToBookShelf={this.switchBookShelf}/>
                 </div>
               </div>
             </div>
